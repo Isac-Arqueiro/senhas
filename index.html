@@ -5,190 +5,297 @@
 <link rel="icon" href="https://i.imgur.com/GMbtuHz.jpeg">
 <link rel="apple-touch-icon" href="https://i.imgur.com/GMbtuHz.jpeg">
 <meta name="theme-color" content="#1e90ff">
-<meta charset="UTF-8">
-<title>Painel de Senhas</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    margin: 0;
-    padding: 15px;
-    color: #fff;
-  }
+  <meta charset="UTF-8">
+  <title>Painel de Senhas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      margin: 0;
+      padding: 15px;
+      color: #fff;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      text-shadow: 0 0 8px #000;
+    }
+    .formulario, .tabela {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+    h2 {
+      margin-top: 0;
+      color: #ffcc00;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    label { font-weight: bold; display: block; margin-top: 8px; font-size: 0.9em; }
+    input, select, textarea, button {
+      margin-top: 6px;
+      padding: 8px;
+      width: 100%;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    input, select, textarea {
+      background: #f4f4f4;
+      color: #333;
+    }
+    button {
+      background: #ffcc00;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+    button:hover { background: #ffdb4d; }
 
-  h1 { text-align: center; margin-bottom: 20px; font-size: 1.8em; text-shadow: 0 0 8px #000; }
-  .formulario, .tabela { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(0,0,0,0.4); }
-  h2 { margin-top:0; color:#ffcc00; text-align:center; font-size:1.2em; }
-  label { font-weight:bold; display:block; margin-top:8px; font-size:0.9em; }
-  input, select, textarea, button { margin-top:6px; padding:8px; width:100%; border-radius:6px; border:none; font-size:14px; box-sizing:border-box; }
-  input, select, textarea { background:#f4f4f4; color:#333; }
-  button { background:#ffcc00; color:#333; font-weight:bold; cursor:pointer; transition:0.3s; margin-top:10px; }
-  button:hover { background:#ffdb4d; }
-  table { width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
-  th, td { padding:8px; border:1px solid #444; text-align:center; }
-  th { background:#333; color:#ffcc00; }
-  td { background: rgba(255,255,255,0.1); }
-  td b { color:#00ffcc; }
-  .btn-mini { background:#00cc66; color:#fff; border:none; padding:5px 8px; border-radius:5px; cursor:pointer; font-size:12px; margin:2px; }
-  .btn-mini:hover { background:#00e676; }
-  .btn-del { background:#cc0000; }
-  .btn-del:hover { background:#ff3333; }
-  .btn-edit { background:#ff9900; }
-  .btn-edit:hover { background:#ffb84d; }
-  #pesquisa { margin-bottom:8px; padding:8px; width:100%; border-radius:6px; border:none; font-size:14px; background:#f4f4f4; color:#333; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #444;
+      text-align: center;
+    }
+    th { background: #333; color: #ffcc00; }
+    td { background: rgba(255,255,255,0.1); }
+    td b { color: #00ffcc; }
 
-  /* Responsivo celular */
-  @media (max-width:600px){
-    h1{font-size:1.5em;}
-    h2{font-size:1em;}
-    table, thead, tbody, th, td, tr{display:block;}
-    thead tr{display:none;}
-    tr{margin-bottom:8px; border:1px solid #444; border-radius:6px; padding:5px; background: rgba(0,0,0,0.4);}
-    td{border:none; padding:4px 0; text-align:right; position:relative; padding-left:50%; font-size:13px;}
-    td::before{content:attr(data-label); position:absolute; left:10px; width:45%; padding-left:5px; font-weight:bold; text-align:left;}
-    .btn-mini{padding:4px 6px; font-size:11px;}
-  }
-</style>
+    .btn-mini {
+      background: #00cc66;
+      color: #fff;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      margin: 2px;
+    }
+    .btn-mini:hover { background: #00e676; }
+    .btn-del { background: #cc0000; }
+    .btn-del:hover { background: #ff3333; }
+    .btn-edit { background: #ff9900; }
+    .btn-edit:hover { background: #ffb84d; }
+
+    #pesquisa {
+      margin-bottom: 8px;
+      padding: 8px;
+      width: 100%;
+      border-radius: 6px;
+      border: none;
+      font-size: 14px;
+      background: #f4f4f4;
+      color: #333;
+    }
+
+    /* Responsivo para celular */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5em; }
+      h2 { font-size: 1em; }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr { display: none; }
+      tr {
+        margin-bottom: 10px;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 5px;
+      }
+      td {
+        border: none;
+        padding: 5px 0;
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-left: 5px;
+        font-weight: bold;
+        text-align: left;
+      }
+    }
+  </style>
 </head>
 <body>
-<h1>🔐 Painel de Controle de Senhas</h1>
+  <h1>🔐 Painel de Controle de Senhas</h1>
 
-<div class="formulario">
-<h2>➕ Cadastrar / Editar Cliente</h2>
-<label>Nome:</label>
-<input type="text" id="nome">
-<label>Observação:</label>
-<textarea id="obs"></textarea>
-<label>Site:</label>
-<select id="site">
-  <option value="A">Site A</option>
-  <option value="B">Site B</option>
-  <option value="C">Site C</option>
-  <option value="D">Site D</option>
-</select>
-<input type="hidden" id="editIndex">
-<button onclick="salvarCliente()">Salvar</button>
-</div>
+  <div class="formulario">
+    <h2>➕ Cadastrar / Editar Cliente</h2>
+    <label>Nome:</label>
+    <input type="text" id="nome">
+    <label>Observação:</label>
+    <textarea id="obs"></textarea>
+    <label>Site:</label>
+    <select id="site">
+      <option value="A">Site A</option>
+      <option value="B">Site B</option>
+      <option value="C">Site C</option>
+      <option value="D">Site D</option>
+    </select>
+    <input type="hidden" id="editIndex">
+    <button onclick="salvarCliente()">Salvar</button>
+  </div>
 
-<div class="tabela">
-<h2>📋 Clientes Cadastrados</h2>
-<input type="text" id="pesquisa" placeholder="🔎 Pesquisar por nome ou senha..." onkeyup="filtrarTabela()">
-<table>
-  <thead>
-    <tr><th>Nome</th><th>Observação</th><th>Site</th><th>Senha</th><th>Ações</th></tr>
-  </thead>
-  <tbody id="listaClientes"></tbody>
-</table>
-</div>
+  <div class="tabela">
+    <h2>📋 Clientes Cadastrados</h2>
+    <input type="text" id="pesquisa" placeholder="🔎 Pesquisar por nome, senha ou observação..." onkeyup="filtrarTabela()">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Observação</th>
+          <th>Site</th>
+          <th>Senha</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaClientes"></tbody>
+    </table>
+  </div>
 
-<script>
-const baseNumeros = [];
-for(let i=2500;i<=2594;i++) baseNumeros.push("00"+i);
-
-const senhasUsadas = {A:[],B:[],C:[],D:[]};
-let clientes = [];
-
-// carregar do localStorage
-if(localStorage.getItem('clientes')){
-  clientes = JSON.parse(localStorage.getItem('clientes'));
-  clientes.forEach(c=>senhasUsadas[c.site].push(c.senha));
-}
-
-function proximaSenha(site){
-  for(let num of baseNumeros){
-    const senha = site+num;
-    if(!senhasUsadas[site].includes(senha)){
-      senhasUsadas[site].push(senha);
-      return senha;
+  <script>
+    // Base de senhas
+    const baseNumeros = [];
+    for (let i = 2500; i <= 2594; i++) {
+      baseNumeros.push("00" + i);
     }
-  }
-  return null;
-}
 
-function salvarCliente(){
-  const nome=document.getElementById("nome").value.trim();
-  const obs=document.getElementById("obs").value.trim();
-  const site=document.getElementById("site").value;
-  const editIndex=document.getElementById("editIndex").value;
+    // Recupera clientes do localStorage
+    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    let senhasUsadas = JSON.parse(localStorage.getItem('senhasUsadas')) || { A: [], B: [], C: [], D: [] };
 
-  if(!nome){alert("Digite o nome do cliente!"); return;}
+    function salvarLocalStorage() {
+      localStorage.setItem('clientes', JSON.stringify(clientes));
+      localStorage.setItem('senhasUsadas', JSON.stringify(senhasUsadas));
+    }
 
-  if(editIndex){
-    clientes[editIndex].nome = nome;
-    clientes[editIndex].obs = obs;
-    clientes[editIndex].site = site;
-    document.getElementById("editIndex").value="";
-  } else {
-    const senha = proximaSenha(site);
-    if(!senha){alert("⚠️ Todas as senhas desse site já foram usadas!"); return;}
-    clientes.unshift({nome, obs, site, senha});
-  }
+    function proximaSenha(site) {
+      for (let num of baseNumeros) {
+        const senha = site + num;
+        if (!senhasUsadas[site].includes(senha)) {
+          senhasUsadas[site].push(senha);
+          salvarLocalStorage();
+          return senha;
+        }
+      }
+      return null;
+    }
 
-  localStorage.setItem('clientes', JSON.stringify(clientes));
-  atualizarTabela();
-  document.getElementById("nome").value="";
-  document.getElementById("obs").value="";
-}
+    function liberarSenha(senha) {
+      const site = senha.charAt(0);
+      const index = senhasUsadas[site].indexOf(senha);
+      if (index > -1) {
+        senhasUsadas[site].splice(index,1);
+        salvarLocalStorage();
+      }
+    }
 
-function atualizarTabela(){
-  const tbody=document.getElementById("listaClientes");
-  tbody.innerHTML="";
-  clientes.forEach((c,i)=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td data-label="Nome">${c.nome}</td>
-      <td data-label="Observação">${c.obs}</td>
-      <td data-label="Site">${c.site}</td>
-      <td data-label="Senha"><b>${c.senha}</b></td>
-      <td data-label="Ações">
-        <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
-        <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
-        <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
-      </td>`;
-    tbody.appendChild(tr);
-  });
-}
+    function salvarCliente() {
+      const nome = document.getElementById("nome").value.trim();
+      const obs = document.getElementById("obs").value.trim();
+      const site = document.getElementById("site").value;
+      const editIndex = document.getElementById("editIndex").value;
 
-function editar(index){
-  const c=clientes[index];
-  document.getElementById("nome").value=c.nome;
-  document.getElementById("obs").value=c.obs;
-  document.getElementById("site").value=c.site;
-  document.getElementById("editIndex").value=index;
-}
+      if (!nome) {
+        alert("Digite o nome do cliente!");
+        return;
+      }
 
-function apagar(index){
-  if(confirm("Tem certeza que deseja excluir este cliente?")){
-    // liberar a senha
-    const senha = clientes[index].senha;
-    const site = clientes[index].site;
-    const pos = senhasUsadas[site].indexOf(senha);
-    if(pos>-1) senhasUsadas[site].splice(pos,1);
+      if (editIndex !== "") {
+        // Edita cliente existente
+        clientes[editIndex].nome = nome;
+        clientes[editIndex].obs = obs;
+        clientes[editIndex].site = site;
+        document.getElementById("editIndex").value = "";
+      } else {
+        // Novo cliente
+        const senha = proximaSenha(site);
+        if (!senha) {
+          alert("⚠️ Todas as senhas desse site já foram usadas!");
+          return;
+        }
+        clientes.unshift({ nome, obs, site, senha }); // adiciona no topo
+      }
 
-    clientes.splice(index,1);
-    localStorage.setItem('clientes', JSON.stringify(clientes));
+      atualizarTabela();
+      salvarLocalStorage();
+      document.getElementById("nome").value = "";
+      document.getElementById("obs").value = "";
+    }
+
+    function atualizarTabela() {
+      const tbody = document.getElementById("listaClientes");
+      tbody.innerHTML = "";
+      clientes.forEach((c, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-label="Nome">${c.nome}</td>
+          <td data-label="Observação">${c.obs}</td>
+          <td data-label="Site">${c.site}</td>
+          <td data-label="Senha"><b>${c.senha}</b></td>
+          <td data-label="Ações">
+            <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
+            <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
+            <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function editar(index) {
+      const c = clientes[index];
+      document.getElementById("nome").value = c.nome;
+      document.getElementById("obs").value = c.obs;
+      document.getElementById("site").value = c.site;
+      document.getElementById("editIndex").value = index;
+    }
+
+    function apagar(index) {
+      if (confirm("Tem certeza que deseja excluir este cliente?")) {
+        liberarSenha(clientes[index].senha);
+        clientes.splice(index,1);
+        atualizarTabela();
+        salvarLocalStorage();
+      }
+    }
+
+    function filtrarTabela() {
+      const termo = document.getElementById("pesquisa").value.toLowerCase();
+      const linhas = document.querySelectorAll("#listaClientes tr");
+      linhas.forEach(linha => {
+        const texto = linha.innerText.toLowerCase();
+        linha.style.display = texto.includes(termo) ? "" : "none";
+      });
+    }
+
+    function compartilhar(index){
+      const c = clientes[index];
+      const mensagem = `🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n📝 Observação: ${c.obs}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
+      const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
+      window.open(url, "_blank");
+    }
+
     atualizarTabela();
-  }
-}
-
-function filtrarTabela(){
-  const termo=document.getElementById("pesquisa").value.toLowerCase();
-  const linhas=document.querySelectorAll("#listaClientes tr");
-  linhas.forEach(linha=>{
-    const texto=linha.innerText.toLowerCase();
-    linha.style.display=texto.includes(termo)?"":"none";
-  });
-}
-
-function compartilhar(index){
-  const c=clientes[index];
-  const mensagem=`🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n🌐 Site: ${c.site}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
-  const url="https://wa.me/?text="+encodeURIComponent(mensagem);
-  window.open(url,"_blank");
-}
-
-atualizarTabela();
-</script>
+  </script>
   <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
