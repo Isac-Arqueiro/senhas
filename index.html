@@ -3,141 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel de Senhas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
       background: linear-gradient(135deg, #1e3c72, #2a5298);
       margin: 0;
-      padding: 15px;
+      padding: 20px;
       color: #fff;
     }
-
     h1 {
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 1.8em;
-      text-shadow: 0 0 8px #000;
+      margin-bottom: 25px;
+      text-shadow: 0 0 10px #000;
     }
-
     .formulario, .tabela {
       background: rgba(0, 0, 0, 0.6);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
-
     h2 {
       margin-top: 0;
       color: #ffcc00;
       text-align: center;
-      font-size: 1.2em;
     }
-
-    label { font-weight: bold; display: block; margin-top: 8px; font-size: 0.9em; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
     input, select, textarea, button {
       margin-top: 6px;
-      padding: 8px;
+      padding: 10px;
       width: 100%;
-      border-radius: 6px;
+      border-radius: 8px;
       border: none;
-      font-size: 14px;
-      box-sizing: border-box;
+      font-size: 15px;
     }
-
     input, select, textarea {
       background: #f4f4f4;
       color: #333;
     }
-
     button {
       background: #ffcc00;
       color: #333;
       font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
-      margin-top: 10px;
+      margin-top: 15px;
     }
-
     button:hover { background: #ffdb4d; }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
+      margin-top: 15px;
     }
-
     th, td {
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #444;
       text-align: center;
+      font-size: 14px;
     }
-
-    th { background: #333; color: #ffcc00; }
+    th {
+      background: #333;
+      color: #ffcc00;
+    }
     td { background: rgba(255,255,255,0.1); }
     td b { color: #00ffcc; }
-
     .btn-mini {
       background: #00cc66;
       color: #fff;
       border: none;
-      padding: 5px 8px;
-      border-radius: 5px;
+      padding: 6px 10px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 13px;
       margin: 2px;
     }
-
     .btn-mini:hover { background: #00e676; }
     .btn-del { background: #cc0000; }
     .btn-del:hover { background: #ff3333; }
     .btn-edit { background: #ff9900; }
     .btn-edit:hover { background: #ffb84d; }
-
     #pesquisa {
-      margin-bottom: 8px;
-      padding: 8px;
+      margin-bottom: 10px;
+      padding: 10px;
       width: 100%;
-      border-radius: 6px;
+      border-radius: 8px;
       border: none;
-      font-size: 14px;
+      font-size: 15px;
       background: #f4f4f4;
       color: #333;
     }
-
-    /* Responsivo para celular */
     @media (max-width: 600px) {
-      h1 { font-size: 1.5em; }
-      h2 { font-size: 1em; }
-
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      thead tr { display: none; }
-      tr {
-        margin-bottom: 10px;
-        border: 1px solid #444;
-        border-radius: 6px;
-        padding: 5px;
-      }
-      td {
-        border: none;
-        padding: 5px 0;
-        text-align: right;
-        position: relative;
-        padding-left: 50%;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: 45%;
-        padding-left: 5px;
-        font-weight: bold;
-        text-align: left;
-      }
+      th, td { font-size: 12px; padding: 6px; }
+      input, select, textarea, button { font-size: 14px; padding: 8px; }
     }
   </style>
 </head>
@@ -179,11 +136,8 @@
   </div>
 
   <script>
-    // Base de senhas
     const baseNumeros = [];
-    for (let i = 2500; i <= 2594; i++) {
-      baseNumeros.push("00" + i);
-    }
+    for (let i = 2500; i <= 2594; i++) { baseNumeros.push("00" + i); }
 
     const senhasUsadas = { A: [], B: [], C: [], D: [] };
     const clientes = [];
@@ -215,13 +169,12 @@
       } else {
         const senha = proximaSenha(site);
         if (!senha) { alert("⚠️ Todas as senhas desse site já foram usadas!"); return; }
-        clientes.push({ nome, obs, site, senha });
+        clientes.unshift({ nome, obs, site, senha }); // Último cadastrado aparece primeiro
       }
 
       atualizarTabela();
       document.getElementById("nome").value = "";
       document.getElementById("obs").value = "";
-      salvarLocalStorage();
     }
 
     function atualizarTabela() {
@@ -230,11 +183,11 @@
       clientes.forEach((c, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td data-label="Nome">${c.nome}</td>
-          <td data-label="Observação">${c.obs}</td>
-          <td data-label="Site">${c.site}</td>
-          <td data-label="Senha"><b>${c.senha}</b></td>
-          <td data-label="Ações">
+          <td>${c.nome}</td>
+          <td>${c.obs}</td>
+          <td>${c.site}</td>
+          <td><b>${c.senha}</b></td>
+          <td>
             <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
             <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
             <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
@@ -256,7 +209,6 @@
       if (confirm("Tem certeza que deseja excluir este cliente?")) {
         clientes.splice(index, 1);
         atualizarTabela();
-        salvarLocalStorage();
       }
     }
 
@@ -272,29 +224,11 @@
     function compartilhar(index) {
       const c = clientes[index];
       const mensagem = `🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n🌐 Site: ${c.site}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
+
+      // Compartilhar no WhatsApp
       const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
       window.open(url, "_blank");
     }
-
-    // Salvando e carregando do localStorage
-    function salvarLocalStorage() {
-      localStorage.setItem("clientes", JSON.stringify(clientes));
-      localStorage.setItem("senhasUsadas", JSON.stringify(senhasUsadas));
-    }
-
-    function carregarLocalStorage() {
-      const dataClientes = JSON.parse(localStorage.getItem("clientes"));
-      const dataSenhas = JSON.parse(localStorage.getItem("senhasUsadas"));
-      if (dataClientes) {
-        clientes.push(...dataClientes);
-      }
-      if (dataSenhas) {
-        Object.assign(senhasUsadas, dataSenhas);
-      }
-      atualizarTabela();
-    }
-
-    window.onload = carregarLocalStorage;
   </script>
 </body>
 </html>
