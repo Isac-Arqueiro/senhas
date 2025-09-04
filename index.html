@@ -8,104 +8,124 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       background: linear-gradient(135deg, #1e3c72, #2a5298);
       margin: 0;
-      padding: 20px;
+      padding: 15px;
       color: #fff;
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 25px;
-      text-shadow: 0 0 10px #000;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      text-shadow: 0 0 8px #000;
     }
+
     .formulario, .tabela {
       background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
     }
+
     h2 {
       margin-top: 0;
       color: #ffcc00;
       text-align: center;
+      font-size: 1.2em;
     }
-    label { font-weight: bold; display: block; margin-top: 10px; }
+
+    label { font-weight: bold; display: block; margin-top: 8px; font-size: 0.9em; }
     input, select, textarea, button {
       margin-top: 6px;
-      padding: 10px;
+      padding: 8px;
       width: 100%;
-      border-radius: 8px;
+      border-radius: 6px;
       border: none;
-      font-size: 15px;
+      font-size: 14px;
       box-sizing: border-box;
     }
-    input, select, textarea {
-      background: #f4f4f4;
-      color: #333;
-    }
+
+    input, select, textarea { background: #f4f4f4; color: #333; }
+
     button {
       background: #ffcc00;
       color: #333;
       font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
-      margin-top: 15px;
+      margin-top: 10px;
     }
+
     button:hover { background: #ffdb4d; }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-      table-layout: auto;
+      margin-top: 10px;
+      font-size: 13px;
     }
+
     th, td {
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #444;
       text-align: center;
-      font-size: 14px;
-      word-break: break-word;
     }
-    th {
-      background: #333;
-      color: #ffcc00;
-    }
+
+    th { background: #333; color: #ffcc00; }
     td { background: rgba(255,255,255,0.1); }
     td b { color: #00ffcc; }
+
     .btn-mini {
       background: #00cc66;
       color: #fff;
       border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 5px 8px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 12px;
       margin: 2px;
     }
+
     .btn-mini:hover { background: #00e676; }
     .btn-del { background: #cc0000; }
     .btn-del:hover { background: #ff3333; }
     .btn-edit { background: #ff9900; }
     .btn-edit:hover { background: #ffb84d; }
+
     #pesquisa {
-      margin-bottom: 10px;
-      padding: 10px;
+      margin-bottom: 8px;
+      padding: 8px;
       width: 100%;
-      border-radius: 8px;
+      border-radius: 6px;
       border: none;
-      font-size: 15px;
+      font-size: 14px;
       background: #f4f4f4;
       color: #333;
-      box-sizing: border-box;
     }
 
-    /* CSS Responsivo para celular */
+    /* Responsivo para celular */
     @media (max-width: 600px) {
-      body { padding: 10px; }
-      .formulario, .tabela { padding: 15px; }
-      h1 { font-size: 24px; }
-      h2 { font-size: 18px; }
-      input, select, textarea, button { font-size: 14px; padding: 8px; }
-      th, td { font-size: 12px; padding: 6px; }
-      .btn-mini { font-size: 11px; padding: 4px 6px; }
+      h1 { font-size: 1.5em; }
+      h2 { font-size: 1em; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { display: none; }
+      tr { margin-bottom: 10px; border: 1px solid #444; border-radius: 6px; padding: 5px; }
+      td {
+        border: none;
+        padding: 5px 0;
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-left: 5px;
+        font-weight: bold;
+        text-align: left;
+      }
     }
   </style>
 </head>
@@ -153,10 +173,9 @@
     const senhasUsadas = { A: [], B: [], C: [], D: [] };
     let clientes = [];
 
-    // Carregar clientes do localStorage ao iniciar
+    // Carregar clientes do localStorage
     if (localStorage.getItem('clientes')) {
       clientes = JSON.parse(localStorage.getItem('clientes'));
-      // Preencher senhas usadas
       clientes.forEach(c => senhasUsadas[c.site].push(c.senha));
     }
 
@@ -187,12 +206,10 @@
       } else {
         const senha = proximaSenha(site);
         if (!senha) { alert("⚠️ Todas as senhas desse site já foram usadas!"); return; }
-        clientes.unshift({ nome, obs, site, senha });
+        clientes.unshift({ nome, obs, site, senha }); // último cadastrado primeiro
       }
 
-      // Salvar no localStorage
       localStorage.setItem('clientes', JSON.stringify(clientes));
-
       atualizarTabela();
       document.getElementById("nome").value = "";
       document.getElementById("obs").value = "";
@@ -204,11 +221,11 @@
       clientes.forEach((c, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${c.nome}</td>
-          <td>${c.obs}</td>
-          <td>${c.site}</td>
-          <td><b>${c.senha}</b></td>
-          <td>
+          <td data-label="Nome">${c.nome}</td>
+          <td data-label="Observação">${c.obs}</td>
+          <td data-label="Site">${c.site}</td>
+          <td data-label="Senha"><b>${c.senha}</b></td>
+          <td data-label="Ações">
             <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
             <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
             <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
@@ -250,7 +267,6 @@
       window.open(url, "_blank");
     }
 
-    // Atualizar tabela ao carregar
     atualizarTabela();
   </script>
 </body>
