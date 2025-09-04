@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="manifest" href="manifest.json">
-<link rel="icon" href="https://i.imgur.com/GMbtuHz.jpeg">
-<link rel="apple-touch-icon" href="https://i.imgur.com/GMbtuHz.jpeg">
-<meta name="theme-color" content="#1e90ff">
 <meta charset="UTF-8">
-<title>Painel de Senhas - Mobile Friendly</title>
+<title>Painel de Senhas</title>
 <style>
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: linear-gradient(135deg,#1e3c72,#2a5298);
   margin:0;padding:15px;color:#fff;
 }
-h1{text-align:center;margin-bottom:20px;font-size:1.6em;text-shadow:0 0 8px #000;}
-.formulario,.tabela{
+h1{text-align:center;margin-bottom:15px;font-size:1.6em;text-shadow:0 0 8px #000;}
+.formulario{
   background:rgba(0,0,0,0.6);padding:15px;border-radius:10px;margin-bottom:15px;
   box-shadow:0 3px 8px rgba(0,0,0,0.4);
 }
@@ -37,17 +33,16 @@ td b{color:#00ffcc;}
 .btn-del:hover{background:#ff3333;}
 .btn-edit{background:#ff9900;}
 .btn-edit:hover{background:#ffb84d;}
-#pesquisa,#pesquisaSenha{margin-bottom:8px;padding:6px;width:100%;border-radius:6px;border:none;font-size:13px;background:#f4f4f4;color:#333;}
+#pesquisa{margin-bottom:8px;padding:6px;width:100%;border-radius:6px;border:none;font-size:13px;background:#f4f4f4;color:#333;}
 
-/* Responsivo para celular */
+/* Mobile */
 @media(max-width:600px){
-  h1{font-size:1.4em;} h2{font-size:1em;}
+  h1{font-size:1.4em;}
   table,thead,tbody,th,td,tr{display:block;}
   thead tr{display:none;}
   tr{margin-bottom:10px;border:1px solid #444;border-radius:6px;padding:5px;}
-  td{border:none;padding:4px 0;text-align:right;position:relative;padding-left:45%;}
-  td::before{content:attr(data-label);position:absolute;left:10px;width:40%;padding-left:5px;font-weight:bold;text-align:left;font-size:12px;}
-  .btn-mini{padding:3px 5px;font-size:10px;}
+  td{border:none;padding:4px 0;text-align:right;position:relative;padding-left:50%;}
+  td::before{content:attr(data-label);position:absolute;left:10px;width:45%;padding-left:5px;font-weight:bold;text-align:left;font-size:12px;}
 }
 </style>
 </head>
@@ -55,54 +50,53 @@ td b{color:#00ffcc;}
 <h1>🔐 Painel de Senhas</h1>
 
 <div class="formulario">
-<h2>➕ Cadastrar / Editar Cliente</h2>
-<label>Nome:</label><input type="text" id="nome">
-<label>Observação:</label><textarea id="obs"></textarea>
-<label>Site:</label>
-<select id="site">
-<option value="A">Site A</option>
-<option value="B">Site B</option>
-<option value="C">Site C</option>
-<option value="D">Site D</option>
-</select>
-<input type="hidden" id="editIndex">
-<button onclick="salvarCliente()">Salvar</button>
-
-<h2>⚙️ Redefinir Ponto de Início de Senha</h2>
-<input type="number" id="novoInicio" placeholder="Ex: 2578">
-<button onclick="definirPonto()">Atualizar Ponto de Início</button>
+  <h2>➕ Cadastrar / Editar Cliente</h2>
+  <label>Nome:</label><input type="text" id="nome">
+  <label>Observação:</label><textarea id="obs"></textarea>
+  <label>Site:</label>
+  <select id="site">
+    <option value="A">Site A</option>
+    <option value="B">Site B</option>
+    <option value="C">Site C</option>
+    <option value="D">Site D</option>
+  </select>
+  <input type="hidden" id="editIndex">
+  <button onclick="salvarCliente()">Salvar</button>
 </div>
 
-<div class="tabela">
-<h2>📋 Clientes Cadastrados</h2>
-<input type="text" id="pesquisa" placeholder="🔎 Pesquisar..." onkeyup="filtrarTabela()">
-<table>
-<thead><tr><th>Nome</th><th>Obs</th><th>Site</th><th>Senha</th><th>Ações</th></tr></thead>
-<tbody id="listaClientes"></tbody>
-</table>
+<div class="formulario">
+  <h2>⚙️ Redefinir Ponto de Início</h2>
+  <input type="number" id="novoInicio" placeholder="Ex: 2578">
+  <button onclick="definirPonto()">Atualizar</button>
 </div>
 
-<div class="tabela">
-<h2>🗂 Controle de Senhas Usadas</h2>
-<input type="text" id="pesquisaSenha" placeholder="🔎 Pesquisar..." onkeyup="filtrarTabelaSenhas()">
-<table>
-<thead><tr><th>Senha</th><th>Site</th><th>Dispositivo</th><th>Status</th></tr></thead>
-<tbody id="listaSenhas"></tbody>
-</table>
+<div class="formulario">
+  <h2>📋 Clientes e Senhas</h2>
+  <input type="text" id="pesquisa" placeholder="🔎 Pesquisar..." onkeyup="filtrarTabela()">
+  <table>
+    <thead>
+      <tr><th>Nome</th><th>Obs</th><th>Site</th><th>Senha</th><th>Status</th><th>Ações</th></tr>
+    </thead>
+    <tbody id="lista"></tbody>
+  </table>
+</div>
+
+<div class="formulario">
+  <h2>💾 Backup</h2>
+  <button onclick="exportarDados()">⬇️ Exportar JSON</button>
+  <input type="file" id="importarArquivo" accept=".json" onchange="importarDados(event)">
 </div>
 
 <script>
-let deviceId = localStorage.getItem("deviceId");
-if(!deviceId){ deviceId='dev-'+Math.random().toString(36).substr(2,9); localStorage.setItem("deviceId",deviceId); }
+let deviceId=localStorage.getItem("deviceId");
+if(!deviceId){deviceId='dev-'+Math.random().toString(36).substr(2,9);localStorage.setItem("deviceId",deviceId);}
 
-let baseNumeros=[];
-for(let i=2500;i<=2594;i++) baseNumeros.push("00"+i);
-
-const originalPonto=parseInt(localStorage.getItem("pontoOriginal")||2500);
+let baseNumeros=[];for(let i=2500;i<=2594;i++) baseNumeros.push("00"+i);
+let originalPonto=parseInt(localStorage.getItem("pontoOriginal")||2500);
 let pontoAtual=parseInt(localStorage.getItem("pontoAtual")||originalPonto);
 
-const clientes=JSON.parse(localStorage.getItem("clientes")||"[]");
-const senhasUsadas=JSON.parse(localStorage.getItem("senhasUsadas")||'{"A":[],"B":[],"C":[],"D":[]}');
+let clientes=JSON.parse(localStorage.getItem("clientes")||"[]");
+let senhasUsadas=JSON.parse(localStorage.getItem("senhasUsadas")||'{"A":[],"B":[],"C":[],"D":[]}');
 
 function salvarLocal(){
   localStorage.setItem("clientes",JSON.stringify(clientes));
@@ -113,14 +107,12 @@ function salvarLocal(){
 
 function proximaSenha(site){
   for(let num of baseNumeros){
-    const senha = site+num;
+    const senha=site+num;
     if(!senhasUsadas[site].some(s=>s.senha===senha)){
       senhasUsadas[site].push({senha,device:deviceId});
-      salvarLocal();
-      return senha;
+      salvarLocal();return senha;
     }
-  }
-  return null;
+  }return null;
 }
 
 function salvarCliente(){
@@ -128,125 +120,109 @@ function salvarCliente(){
   const obs=document.getElementById("obs").value.trim();
   const site=document.getElementById("site").value;
   const editIndex=document.getElementById("editIndex").value;
-
-  if(!nome){ alert("Digite o nome do cliente!"); return; }
+  if(!nome){alert("Digite o nome!");return;}
 
   if(editIndex){
-    clientes[editIndex].nome=nome;
-    clientes[editIndex].obs=obs;
-    clientes[editIndex].site=site;
+    clientes[editIndex].nome=nome;clientes[editIndex].obs=obs;clientes[editIndex].site=site;
     document.getElementById("editIndex").value="";
-  } else {
-    const senha = proximaSenha(site);
-    if(!senha){ alert("⚠️ Todas as senhas deste site já foram usadas!"); return; }
+  }else{
+    const senha=proximaSenha(site);
+    if(!senha){alert("⚠️ Todas as senhas foram usadas!");return;}
     clientes.unshift({nome,obs,site,senha});
   }
   atualizarTabela();
-  document.getElementById("nome").value="";
-  document.getElementById("obs").value="";
+  document.getElementById("nome").value="";document.getElementById("obs").value="";
 }
 
 function atualizarTabela(){
-  const tbody=document.getElementById("listaClientes");
-  tbody.innerHTML="";
+  const tbody=document.getElementById("lista");tbody.innerHTML="";
   clientes.forEach((c,i)=>{
+    const usado=senhasUsadas[c.site].find(s=>s.senha===c.senha);
+    const status=(usado && usado.device===deviceId)?"Neste dispositivo":"Outro dispositivo";
     const tr=document.createElement("tr");
     tr.innerHTML=`
       <td data-label="Nome">${c.nome}</td>
       <td data-label="Obs">${c.obs}</td>
       <td data-label="Site">${c.site}</td>
       <td data-label="Senha"><b>${c.senha}</b></td>
+      <td data-label="Status">${status}</td>
       <td data-label="Ações">
         <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
         <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
         <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
-      </td>
-    `;
+      </td>`;
     tbody.appendChild(tr);
   });
-  atualizarTabelaSenhas();
   salvarLocal();
 }
 
-function atualizarTabelaSenhas(){
-  const tbody=document.getElementById("listaSenhas");
-  tbody.innerHTML="";
-  for(const site in senhasUsadas){
-    senhasUsadas[site].forEach(s=>{
-      const tr=document.createElement("tr");
-      const status = (s.device===deviceId)?"Em uso neste dispositivo":"Em uso em outro dispositivo";
-      tr.innerHTML=`
-        <td data-label="Senha">${s.senha}</td>
-        <td data-label="Site">${site}</td>
-        <td data-label="Dispositivo">${s.device}</td>
-        <td data-label="Status">${status}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-}
-
-function editar(index){
-  const c = clientes[index];
+function editar(i){
+  const c=clientes[i];
   document.getElementById("nome").value=c.nome;
   document.getElementById("obs").value=c.obs;
   document.getElementById("site").value=c.site;
-  document.getElementById("editIndex").value=index;
+  document.getElementById("editIndex").value=i;
 }
 
-function apagar(index){
-  if(confirm("Tem certeza que deseja excluir este cliente?")){
-    const c = clientes[index];
+function apagar(i){
+  if(confirm("Excluir cliente?")){
+    const c=clientes[i];
     const idx=senhasUsadas[c.site].findIndex(s=>s.senha===c.senha);
     if(idx>-1) senhasUsadas[c.site].splice(idx,1);
-    clientes.splice(index,1);
+    clientes.splice(i,1);
     atualizarTabela();
   }
 }
 
 function filtrarTabela(){
   const termo=document.getElementById("pesquisa").value.toLowerCase();
-  document.querySelectorAll("#listaClientes tr").forEach(linha=>{
-    linha.style.display=linha.innerText.toLowerCase().includes(termo)?"":"none";
+  document.querySelectorAll("#lista tr").forEach(l=>{
+    l.style.display=l.innerText.toLowerCase().includes(termo)?"":"none";
   });
 }
 
-function filtrarTabelaSenhas(){
-  const termo=document.getElementById("pesquisaSenha").value.toLowerCase();
-  document.querySelectorAll("#listaSenhas tr").forEach(linha=>{
-    linha.style.display=linha.innerText.toLowerCase().includes(termo)?"":"none";
-  });
-}
-
-function compartilhar(index){
-  const c=clientes[index];
-  const mensagem=`🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n💬 Observação: ${c.obs}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
-  window.open("https://wa.me/?text="+encodeURIComponent(mensagem),"_blank");
-}
-
-function redefinirPontoInicio(novoInicio){
-  pontoAtual=novoInicio;
-  baseNumeros=[];
-  for(let i=novoInicio;i<=2594;i++) baseNumeros.push("00"+i);
-  salvarLocal();
-  alert("Ponto de início atualizado para "+novoInicio);
+function compartilhar(i){
+  const c=clientes[i];
+  const msg=`🔑 Senha de acesso\n👤 Cliente: ${c.nome}\n💬 Obs: ${c.obs}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
 
 function definirPonto(){
   const novo=parseInt(document.getElementById("novoInicio").value);
-  if(!novo){ alert("Digite um número válido!"); return; }
-  redefinirPontoInicio(novo);
+  if(!novo){alert("Digite um número válido!");return;}
+  pontoAtual=novo;baseNumeros=[];for(let i=novo;i<=2594;i++) baseNumeros.push("00"+i);
+  salvarLocal();alert("Ponto de início atualizado!");
 }
 
-// Inicialização
-atualizarTabela();
-</script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker registrado'))
-      .catch(err => console.error('Erro ao registrar SW', err));
+function exportarDados(){
+  const dados={clientes,senhasUsadas,pontoAtual,originalPonto};
+  const blob=new Blob([JSON.stringify(dados,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="backup-senhas.json";a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarDados(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const dados=JSON.parse(e.target.result);
+      clientes=dados.clientes||[];
+      senhasUsadas=dados.senhasUsadas||{"A":[],"B":[],"C":[],"D":[]};
+      pontoAtual=dados.pontoAtual||2500;
+      originalPonto=dados.originalPonto||2500;
+      atualizarTabela();
+      alert("Backup importado com sucesso!");
+    }catch(err){alert("Erro ao importar: "+err);}
   }
+  reader.readAsText(file);
+}
+
+// inicializar
+atualizarTabela();
 </script>
 </body>
 </html>
