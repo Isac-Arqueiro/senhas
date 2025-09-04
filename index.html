@@ -36,6 +36,7 @@
       border-radius: 8px;
       border: none;
       font-size: 15px;
+      box-sizing: border-box;
     }
     input, select, textarea {
       background: #f4f4f4;
@@ -54,12 +55,14 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
+      table-layout: auto;
     }
     th, td {
       padding: 10px;
       border: 1px solid #444;
       text-align: center;
       font-size: 14px;
+      word-break: break-word;
     }
     th {
       background: #333;
@@ -91,6 +94,18 @@
       font-size: 15px;
       background: #f4f4f4;
       color: #333;
+      box-sizing: border-box;
+    }
+
+    /* CSS Responsivo para celular */
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      .formulario, .tabela { padding: 15px; }
+      h1 { font-size: 24px; }
+      h2 { font-size: 18px; }
+      input, select, textarea, button { font-size: 14px; padding: 8px; }
+      th, td { font-size: 12px; padding: 6px; }
+      .btn-mini { font-size: 11px; padding: 4px 6px; }
     }
   </style>
 </head>
@@ -136,7 +151,14 @@
     for (let i = 2500; i <= 2594; i++) { baseNumeros.push("00" + i); }
 
     const senhasUsadas = { A: [], B: [], C: [], D: [] };
-    const clientes = [];
+    let clientes = [];
+
+    // Carregar clientes do localStorage ao iniciar
+    if (localStorage.getItem('clientes')) {
+      clientes = JSON.parse(localStorage.getItem('clientes'));
+      // Preencher senhas usadas
+      clientes.forEach(c => senhasUsadas[c.site].push(c.senha));
+    }
 
     function proximaSenha(site) {
       for (let num of baseNumeros) {
@@ -165,8 +187,11 @@
       } else {
         const senha = proximaSenha(site);
         if (!senha) { alert("⚠️ Todas as senhas desse site já foram usadas!"); return; }
-        clientes.unshift({ nome, obs, site, senha }); // Último cadastrado aparece primeiro
+        clientes.unshift({ nome, obs, site, senha });
       }
+
+      // Salvar no localStorage
+      localStorage.setItem('clientes', JSON.stringify(clientes));
 
       atualizarTabela();
       document.getElementById("nome").value = "";
@@ -204,6 +229,7 @@
     function apagar(index) {
       if (confirm("Tem certeza que deseja excluir este cliente?")) {
         clientes.splice(index, 1);
+        localStorage.setItem('clientes', JSON.stringify(clientes));
         atualizarTabela();
       }
     }
@@ -220,10 +246,12 @@
     function compartilhar(index) {
       const c = clientes[index];
       const mensagem = `🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n🌐 Site: ${c.site}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
-
       const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
       window.open(url, "_blank");
     }
+
+    // Atualizar tabela ao carregar
+    atualizarTabela();
   </script>
 </body>
 </html>
