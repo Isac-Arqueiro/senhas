@@ -92,10 +92,6 @@
       background: #f4f4f4;
       color: #333;
     }
-    @media (max-width: 600px) {
-      th, td { font-size: 12px; padding: 6px; }
-      input, select, textarea, button { font-size: 14px; padding: 8px; }
-    }
   </style>
 </head>
 <body>
@@ -225,7 +221,6 @@
       const c = clientes[index];
       const mensagem = `🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n🌐 Site: ${c.site}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
 
-      // Compartilhar no WhatsApp
       const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
       window.open(url, "_blank");
     }
