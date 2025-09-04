@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Senhas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      margin: 0;
+      padding: 20px;
+      color: #fff;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      text-shadow: 0 0 10px #000;
+    }
+    .formulario, .tabela {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    h2 {
+      margin-top: 0;
+      color: #ffcc00;
+      text-align: center;
+    }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select, textarea, button {
+      margin-top: 6px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+    input, select, textarea {
+      background: #f4f4f4;
+      color: #333;
+    }
+    button {
+      background: #ffcc00;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 15px;
+    }
+    button:hover { background: #ffdb4d; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #444;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background: #333;
+      color: #ffcc00;
+    }
+    td { background: rgba(255,255,255,0.1); }
+    td b { color: #00ffcc; }
+    .btn-mini {
+      background: #00cc66;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      margin: 2px;
+    }
+    .btn-mini:hover { background: #00e676; }
+    .btn-del { background: #cc0000; }
+    .btn-del:hover { background: #ff3333; }
+    .btn-edit { background: #ff9900; }
+    .btn-edit:hover { background: #ffb84d; }
+    #pesquisa {
+      margin-bottom: 10px;
+      padding: 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+      background: #f4f4f4;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Painel de Controle de Senhas</h1>
+
+  <div class="formulario">
+    <h2>➕ Cadastrar / Editar Cliente</h2>
+    <label>Nome:</label>
+    <input type="text" id="nome">
+    <label>Observação:</label>
+    <textarea id="obs"></textarea>
+    <label>Site:</label>
+    <select id="site">
+      <option value="A">Site A</option>
+      <option value="B">Site B</option>
+      <option value="C">Site C</option>
+      <option value="D">Site D</option>
+    </select>
+    <input type="hidden" id="editIndex">
+    <button onclick="salvarCliente()">Salvar</button>
+  </div>
+
+  <div class="tabela">
+    <h2>📋 Clientes Cadastrados</h2>
+    <input type="text" id="pesquisa" placeholder="🔎 Pesquisar por nome ou senha..." onkeyup="filtrarTabela()">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Observação</th>
+          <th>Site</th>
+          <th>Senha</th>
+          <th>Vencimento</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaClientes"></tbody>
+    </table>
+  </div>
+
+<script>
+  const baseNumeros = [];
+  for (let i = 2500; i <= 2594; i++) {
+    baseNumeros.push("00" + i);
+  }
+
+  const senhasUsadas = { A: [], B: [], C: [], D: [] };
+  const clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+
+  // Preencher senhas usadas se já existem
+  clientes.forEach(c => senhasUsadas[c.site].push(c.senha));
+
+  function proximaSenha(site) {
+    for (let num of baseNumeros) {
+      const senha = site + num;
+      if (!senhasUsadas[site].includes(senha)) {
+        senhasUsadas[site].push(senha);
+        return senha;
+      }
+    }
+    return null;
+  }
+
+  function salvarCliente() {
+    const nome = document.getElementById("nome").value.trim();
+    const obs = document.getElementById("obs").value.trim();
+    const site = document.getElementById("site").value;
+    const editIndex = document.getElementById("editIndex").value;
+
+    if (!nome) { alert("Digite o nome do cliente!"); return; }
+
+    if (editIndex) {
+      // Editar cliente existente
+      clientes[editIndex].nome = nome;
+      clientes[editIndex].obs = obs;
+      clientes[editIndex].site = site;
+      document.getElementById("editIndex").value = "";
+    } else {
+      // Novo cliente
+      const senha = proximaSenha(site);
+      if (!senha) { alert("⚠️ Todas as senhas desse site já foram usadas!"); return; }
+      clientes.push({ nome, obs, site, senha, vencimento: "31/12/2025" });
+    }
+
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+    atualizarTabela();
+    document.getElementById("nome").value = "";
+    document.getElementById("obs").value = "";
+  }
+
+  function atualizarTabela() {
+    const tbody = document.getElementById("listaClientes");
+    tbody.innerHTML = "";
+    clientes.forEach((c, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${c.nome}</td>
+        <td>${c.obs}</td>
+        <td>${c.site}</td>
+        <td><b>${c.senha}</b></td>
+        <td>${c.vencimento}</td>
+        <td>
+          <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
+          <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
+          <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function editar(index) {
+    const c = clientes[index];
+    document.getElementById("nome").value = c.nome;
+    document.getElementById("obs").value = c.obs;
+    document.getElementById("site").value = c.site;
+    document.getElementById("editIndex").value = index;
+  }
+
+  function apagar(index) {
+    if (confirm("Tem certeza que deseja excluir este cliente?")) {
+      clientes.splice(index, 1);
+      localStorage.setItem("clientes", JSON.stringify(clientes));
+      atualizarTabela();
+    }
+  }
+
+  function filtrarTabela() {
+    const termo = document.getElementById("pesquisa").value.toLowerCase();
+    const linhas = document.querySelectorAll("#listaClientes tr");
+    linhas.forEach(linha => {
+      const texto = linha.innerText.toLowerCase();
+      linha.style.display = texto.includes(termo) ? "" : "none";
+    });
+  }
+
+  function compartilhar(index) {
+    const c = clientes[index];
+    const mensagem = `🔑 Senha de acesso\n\n👤 Cliente: ${c.nome}\n🌐 Site: ${c.site}\n🔐 Senha: ${c.senha}\n📅 Válida até: ${c.vencimento}`;
+    const url = "https://wa.me/?text=" + encodeURIComponent(mensagem);
+    window.open(url, "_blank");
+  }
+
+  atualizarTabela();
+</script>
+</body>
+</html>
