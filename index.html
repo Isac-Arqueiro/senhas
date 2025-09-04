@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <link rel="manifest" href="manifest.json">
+<link rel="icon" href="https://i.imgur.com/GMbtuHz.jpeg">
+<link rel="apple-touch-icon" href="https://i.imgur.com/GMbtuHz.jpeg">
+<meta name="theme-color" content="#1e90ff">
   <meta charset="UTF-8">
   <title>Painel de Senhas</title>
   <style>
@@ -269,5 +273,12 @@
 
     atualizarTabela();
   </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log('Service Worker registrado'))
+      .catch(err => console.error('Erro ao registrar SW', err));
+  }
+</script>
 </body>
 </html>
