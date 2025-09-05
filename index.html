@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
   <link rel="manifest" href="manifest.json">
-<link rel="icon" href="https://i.imgur.com/GMbtuHz.jpeg">
-<link rel="apple-touch-icon" href="https://i.imgur.com/GMbtuHz.jpeg">
-<meta name="theme-color" content="#1e90ff">
-<meta charset="UTF-8">
-<title>Painel de Senhas</title>
-<style>
+  <link rel="icon" href="https://i.imgur.com/GMbtuHz.jpeg">
+  <link rel="apple-touch-icon" href="https://i.imgur.com/GMbtuHz.jpeg">
+  <meta name="theme-color" content="#1e90ff">
+  <meta charset="UTF-8">
+  <title>Painel de Senhas</title>
+  <style>
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: linear-gradient(135deg,#1e3c72,#2a5298);
@@ -48,7 +48,7 @@ td b{color:#00ffcc;}
   td{border:none;padding:4px 0;text-align:right;position:relative;padding-left:50%;}
   td::before{content:attr(data-label);position:absolute;left:10px;width:45%;padding-left:5px;font-weight:bold;text-align:left;font-size:12px;}
 }
-</style>
+  </style>
 </head>
 <body>
 <h1>🔐 Painel de Senhas</h1>
@@ -69,17 +69,11 @@ td b{color:#00ffcc;}
 </div>
 
 <div class="formulario">
-  <h2>⚙️ Redefinir Ponto de Início</h2>
-  <input type="number" id="novoInicio" placeholder="Ex: 2578">
-  <button onclick="definirPonto()">Atualizar</button>
-</div>
-
-<div class="formulario">
   <h2>📋 Clientes e Senhas</h2>
   <input type="text" id="pesquisa" placeholder="🔎 Pesquisar..." onkeyup="filtrarTabela()">
   <table>
     <thead>
-      <tr><th>Nome</th><th>Obs</th><th>Site</th><th>Senha</th><th>Status</th><th>Ações</th></tr>
+      <tr><th>Nome</th><th>Obs</th><th>Site</th><th>Senha</th><th>Ações</th></tr>
     </thead>
     <tbody id="lista"></tbody>
   </table>
@@ -92,66 +86,92 @@ td b{color:#00ffcc;}
 </div>
 
 <script>
-let deviceId=localStorage.getItem("deviceId");
-if(!deviceId){deviceId='dev-'+Math.random().toString(36).substr(2,9);localStorage.setItem("deviceId",deviceId);}
+/* === SENHAS EMBUTIDAS === */
+const todasSenhas = [
+ "A002500","A002501","A0Q02502","A002D503","A0E02504","AB002505","A0T02506","A0J02507","A00T2508","A0G02509",
+ "A0R02510","A0H02511","A0A02512","A0K02513","A0L02514","A0F02515","A0M02516","A0Z02517","A002518","A0R02519",
+ "A0E02520","A0W02521","A0T02522","A0V02523","A0K02524","A0Y02525","A0R02526","A0Y02527","A0U02528","A0I02529",
+ "A0P02530","A0A02531","A0S02532","A0D02533","A0F02534","A0G02535","A0H02536","A0J02537","A0K02538","A00L2539",
+ "A0Z02540","A0X02541","A0C02542","A0V02543","A0B02544","A0N02545","A0M02546","A0N02547","A0B02548","A0V02549",
+ "A0C02550","A0X02551","A0Z02552","A0A02553","A0S02554","A0D02555","A0F02556","A0G02557","A0H02558","A0J02559",
+ "A0K02560","A0L02561","A0Q02562","A0W02563","A0E02564","A0R02565","A0T02566","A0Y02567","A0U02568","A0I02569",
+ "A0O02570","A0P02571","A0A02572","A0S02573","A0D02574","A0F02575","A0G02576","A0H02577","A0J02578","A0K02579",
+ "A0L02580","A002581","A002582","A002583","A002584","A0Z02585","A0X02586","A0C02587","A0V02588","A0B02589",
+ "A0B02590","A0N02591","A0M02592","A0Q02593","A0W02594","A0E02595"
+];
 
-let baseNumeros=[];for(let i=2500;i<=2594;i++) baseNumeros.push("00"+i);
-let originalPonto=parseInt(localStorage.getItem("pontoOriginal")||2500);
-let pontoAtual=parseInt(localStorage.getItem("pontoAtual")||originalPonto);
-
-let clientes=JSON.parse(localStorage.getItem("clientes")||"[]");
-let senhasUsadas=JSON.parse(localStorage.getItem("senhasUsadas")||'{"A":[],"B":[],"C":[],"D":[]}');
+/* === Clientes e senhas usadas === */
+let clientes = JSON.parse(localStorage.getItem("clientes") || "[]");
+let raw = localStorage.getItem("senhasUsadas");
+let senhasUsadas;
+try {
+  if (!raw) {
+    senhasUsadas = [];
+  } else {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      senhasUsadas = parsed;
+    } else if (parsed && typeof parsed === "object") {
+      senhasUsadas = Object.values(parsed).flat().filter(Boolean);
+      senhasUsadas = [...new Set(senhasUsadas)];
+    } else {
+      senhasUsadas = [];
+    }
+  }
+} catch { senhasUsadas = []; }
 
 function salvarLocal(){
-  localStorage.setItem("clientes",JSON.stringify(clientes));
-  localStorage.setItem("senhasUsadas",JSON.stringify(senhasUsadas));
-  localStorage.setItem("pontoAtual",pontoAtual);
-  localStorage.setItem("pontoOriginal",originalPonto);
+  localStorage.setItem("clientes", JSON.stringify(clientes));
+  localStorage.setItem("senhasUsadas", JSON.stringify(senhasUsadas));
 }
 
-function proximaSenha(site){
-  for(let num of baseNumeros){
-    const senha=site+num;
-    if(!senhasUsadas[site].some(s=>s.senha===senha)){
-      senhasUsadas[site].push({senha,device:deviceId});
-      salvarLocal();return senha;
+function proximaSenha(){
+  for (let s of todasSenhas) {
+    if (!senhasUsadas.includes(s)) {
+      senhasUsadas.push(s);
+      salvarLocal();
+      return s;
     }
-  }return null;
+  }
+  alert("⚠️ Todas as senhas foram usadas!");
+  return null;
 }
 
 function salvarCliente(){
-  const nome=document.getElementById("nome").value.trim();
-  const obs=document.getElementById("obs").value.trim();
-  const site=document.getElementById("site").value;
-  const editIndex=document.getElementById("editIndex").value;
-  if(!nome){alert("Digite o nome!");return;}
+  const nome = document.getElementById("nome").value.trim();
+  const obs = document.getElementById("obs").value.trim();
+  const site = document.getElementById("site").value;
+  const editIndex = document.getElementById("editIndex").value;
+
+  if(!nome){ alert("Digite o nome!"); return; }
 
   if(editIndex){
-    clientes[editIndex].nome=nome;clientes[editIndex].obs=obs;clientes[editIndex].site=site;
-    document.getElementById("editIndex").value="";
-  }else{
-    const senha=proximaSenha(site);
-    if(!senha){alert("⚠️ Todas as senhas foram usadas!");return;}
-    clientes.unshift({nome,obs,site,senha});
+    clientes[editIndex].nome = nome;
+    clientes[editIndex].obs = obs;
+    clientes[editIndex].site = site;
+    document.getElementById("editIndex").value = "";
+  } else {
+    const senha = proximaSenha();
+    if(!senha) return;
+    clientes.unshift({nome, obs, site, senha});
   }
+
   atualizarTabela();
-  document.getElementById("nome").value="";document.getElementById("obs").value="";
+  document.getElementById("nome").value = "";
+  document.getElementById("obs").value = "";
 }
 
 function atualizarTabela(){
-  const tbody=document.getElementById("lista");tbody.innerHTML="";
+  const tbody = document.getElementById("lista");
+  tbody.innerHTML = "";
   clientes.forEach((c,i)=>{
-    const usado=senhasUsadas[c.site].find(s=>s.senha===c.senha);
-    const status=(usado && usado.device===deviceId)?"Neste dispositivo":"Outro dispositivo";
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td data-label="Nome">${c.nome}</td>
       <td data-label="Obs">${c.obs}</td>
       <td data-label="Site">${c.site}</td>
       <td data-label="Senha"><b>${c.senha}</b></td>
-      <td data-label="Status">${status}</td>
       <td data-label="Ações">
-        <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
         <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
         <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
       </td>`;
@@ -161,79 +181,67 @@ function atualizarTabela(){
 }
 
 function editar(i){
-  const c=clientes[i];
-  document.getElementById("nome").value=c.nome;
-  document.getElementById("obs").value=c.obs;
-  document.getElementById("site").value=c.site;
-  document.getElementById("editIndex").value=i;
+  const c = clientes[i];
+  document.getElementById("nome").value = c.nome;
+  document.getElementById("obs").value = c.obs;
+  document.getElementById("site").value = c.site;
+  document.getElementById("editIndex").value = i;
 }
 
 function apagar(i){
   if(confirm("Excluir cliente?")){
-    const c=clientes[i];
-    const idx=senhasUsadas[c.site].findIndex(s=>s.senha===c.senha);
-    if(idx>-1) senhasUsadas[c.site].splice(idx,1);
+    const c = clientes[i];
+    const idx = senhasUsadas.indexOf(c.senha);
+    if(idx > -1) senhasUsadas.splice(idx, 1);
     clientes.splice(i,1);
     atualizarTabela();
   }
 }
 
 function filtrarTabela(){
-  const termo=document.getElementById("pesquisa").value.toLowerCase();
+  const termo = document.getElementById("pesquisa").value.toLowerCase();
   document.querySelectorAll("#lista tr").forEach(l=>{
-    l.style.display=l.innerText.toLowerCase().includes(termo)?"":"none";
+    l.style.display = l.innerText.toLowerCase().includes(termo) ? "" : "none";
   });
 }
 
-function compartilhar(i){
-  const c=clientes[i];
-  const msg=`🔑 Senha de acesso\n👤 Cliente: ${c.nome}\n💬 Obs: ${c.obs}\n🔐 Senha: ${c.senha}\n📅 Válida até: 31/12`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
-}
-
-function definirPonto(){
-  const novo=parseInt(document.getElementById("novoInicio").value);
-  if(!novo){alert("Digite um número válido!");return;}
-  pontoAtual=novo;baseNumeros=[];for(let i=novo;i<=2594;i++) baseNumeros.push("00"+i);
-  salvarLocal();alert("Ponto de início atualizado!");
-}
-
 function exportarDados(){
-  const dados={clientes,senhasUsadas,pontoAtual,originalPonto};
-  const blob=new Blob([JSON.stringify(dados,null,2)],{type:"application/json"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download="backup-senhas.json";a.click();
+  const dados = {clientes, senhasUsadas};
+  const blob = new Blob([JSON.stringify(dados,null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "backup-senhas.json"; a.click();
   URL.revokeObjectURL(url);
 }
 
 function importarDados(event){
-  const file=event.target.files[0];
+  const file = event.target.files[0];
   if(!file) return;
-  const reader=new FileReader();
+  const reader = new FileReader();
   reader.onload=function(e){
     try{
-      const dados=JSON.parse(e.target.result);
-      clientes=dados.clientes||[];
-      senhasUsadas=dados.senhasUsadas||{"A":[],"B":[],"C":[],"D":[]};
-      pontoAtual=dados.pontoAtual||2500;
-      originalPonto=dados.originalPonto||2500;
+      const dados = JSON.parse(e.target.result);
+      clientes = dados.clientes || [];
+      if(Array.isArray(dados.senhasUsadas)){
+        senhasUsadas = dados.senhasUsadas;
+      } else if(dados.senhasUsadas && typeof dados.senhasUsadas === "object"){
+        senhasUsadas = Object.values(dados.senhasUsadas).flat().filter(Boolean);
+        senhasUsadas = [...new Set(senhasUsadas)];
+      } else senhasUsadas=[];
       atualizarTabela();
       alert("Backup importado com sucesso!");
-    }catch(err){alert("Erro ao importar: "+err);}
+    } catch(err){ alert("Erro ao importar: "+err); }
   }
   reader.readAsText(file);
 }
 
-// inicializar
 atualizarTabela();
-</script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker registrado'))
-      .catch(err => console.error('Erro ao registrar SW', err));
-  }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('Service Worker registrado'))
+    .catch(err => console.error('Erro ao registrar SW', err));
+}
 </script>
 </body>
 </html>
