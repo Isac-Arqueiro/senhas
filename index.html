@@ -172,6 +172,7 @@ function atualizarTabela(){
       <td data-label="Site">${c.site}</td>
       <td data-label="Senha"><b>${c.senha}</b></td>
       <td data-label="Ações">
+        <button class="btn-mini" onclick="compartilhar(${i})">Compartilhar</button>
         <button class="btn-mini btn-edit" onclick="editar(${i})">Editar</button>
         <button class="btn-mini btn-del" onclick="apagar(${i})">Excluir</button>
       </td>`;
@@ -196,6 +197,12 @@ function apagar(i){
     clientes.splice(i,1);
     atualizarTabela();
   }
+}
+
+function compartilhar(i){
+  const c = clientes[i];
+  const msg = `🔑 Senha de acesso\n👤 Cliente: ${c.nome}\n💬 Obs: ${c.obs}\n🔐 Senha: ${c.senha}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg), "_blank");
 }
 
 function filtrarTabela(){
